@@ -1,14 +1,17 @@
 #!/bin/bash
 
+mkdir /tmp/_site
+
+pushd $BITBUCKET_CLONE_DIR
+
+bundle install
+bundle exec jekyll build --destination /tmp/_site --config _config_production.yml
+
 git checkout -f pages
-git merge master
-
-git remote add deploy $DEPLOY_ADDR
-git subtree add --prefix=_site deploy master
-
-jekyll build
-
+cp -r /tmp/_site/* .
 git add .
 
-git commit "Deploy $GIT_COMMIT_ID"
-git subtree push --prefix=_site deploy master
+git commit "Deploy '$BITBUCKET_COMMIT'"
+git push origin pages
+
+popd
