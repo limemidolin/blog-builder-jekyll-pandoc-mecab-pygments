@@ -1,17 +1,15 @@
 #!/bin/bash
 
-mkdir /tmp/_site
+mkdir ${DESTINATION:-_site}
 
-pushd $BITBUCKET_CLONE_DIR
+pushd ${BUILD_DIR:-${BITBUCKET_CLONE_DIR:-.}}
+
+chmod 555 *.py
 
 bundle install
-bundle exec jekyll build --destination /tmp/_site --config _config_production.yml
-
-git checkout -f pages
-cp -r /tmp/_site/* .
-git add .
-
-git commit "Deploy '$BITBUCKET_COMMIT'"
-git push origin pages
+bundle exec jekyll build \
+    --destination ${DESTINATION:-_site} \
+    --config ${CONFIG_FILE:-_config.yml} \
+    ${VERBOSE:+--verbose}
 
 popd
